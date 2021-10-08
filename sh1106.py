@@ -82,7 +82,21 @@ class SH1106(framebuf.FrameBuffer):
         self.write_cmd(LOW_COLUMN_ADDRESS | 2)
         self.write_cmd(HIGH_COLUMN_ADDRESS | 0)
         self.write_data(db[(w*page):(w*page+w)])
-
+        
+class SH1106_I2C(SSD1306):  
+   def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):  
+     self.i2c = i2c  
+     self.addr = addr  
+     self.temp = bytearray(2)  
+     self.write_list = [b"\x40", None] # Co=0, D/C#=1  
+     super().__init__(width, height, external_vcc)  
+   def write_cmd(self, cmd):  
+     self.temp[0] = 0x80 # Co=1, D/C#=0  
+     self.temp[1] = cmd  
+     self.i2c.writeto(self.addr, self.temp)  
+   def write_data(self, buf):  
+     self.write_list[1] = buf  
+     self.i2c.writevto(self.addr, self.write_list) 
 class SH1106_SPI(SH1106):  
   def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):  
     self.rate = 10 * 1024 * 1024  
