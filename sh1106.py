@@ -83,7 +83,7 @@ class SH1106(framebuf.FrameBuffer):
         self.write_cmd(HIGH_COLUMN_ADDRESS | 0)
         self.write_data(db[(w*page):(w*page+w)])
         
-class SH1106_I2C(SSD1306):  
+class SH1106_I2C(SH1106):  
    def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):  
      self.i2c = i2c  
      self.addr = addr  
